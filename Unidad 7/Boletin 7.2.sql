@@ -51,7 +51,7 @@ GO
 --3--
 GO
 INSERT INTO Libros(ID,Titulo,Autors) 
-VALUES (2,'El corazón de las Tinieblas','Joseph Conrad'),(4,'Cien años de soledad','Gabriel García'),(8,'Harry Potter y la cámara de los secretos','J.K. Rowling'),(16,'Evangelio del Flying Spaguetti Monster','Bobby Henderson')
+VALUES (2,'El corazÃ³n de las Tinieblas','Joseph Conrad'),(4,'Cien aÃ±os de soledad','Gabriel GarcÃ­a'),(8,'Harry Potter y la cÃ¡mara de los secretos','J.K. Rowling'),(16,'Evangelio del Flying Spaguetti Monster','Bobby Henderson')
 GO
 --4--
 GO
@@ -64,7 +64,7 @@ UPDATE Carros SET IDPropietario=6 WHERE IDPropietario=2
 GO
 --6--
 GO
-SELECT nombre FROM People WHERE YEAR(CURRENT_TIMESTAMP)-YEAR(FechaNac)>=30
+SELECT nombre,Apellidos FROM People WHERE YEAR(CURRENT_TIMESTAMP)-YEAR(FechaNac)>=30
 GO
 --7--
 GO
