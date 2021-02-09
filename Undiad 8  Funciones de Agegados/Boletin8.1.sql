@@ -43,7 +43,7 @@ SELECT CustomerID,YEAR(OrderDate) AS Año,COUNT(OrderID) AS [Numero de pedidos] 
 
 --5. ID del producto, precio unitario y total facturado de ese producto, ordenado por cantidad facturada de mayor a menor. Si hay varios precios unitarios para el mismo producto tomaremos el mayor.
 
-SELECT ProductID,MAX(UnitPrice) AS [Mayor Precio Unitario],SUM(UnitPrice*UnitsOnOrder) AS [Total Facturado] FROM Products GROUP BY ProductID  ORDER BY [Total Facturado] DESC
+SELECT ProductID,MAX(UnitPrice) AS [Mayor Precio Unitario],SUM(UnitPrice*Quantity(1-Discount)) AS [Total Facturado] FROM OrderDetails GROUP BY ProductID  ORDER BY [Total Facturado] DESC
 
 --6.ID del proveedor e importe total del stock acumulado de productos correspondientes a ese proveedor.
 
