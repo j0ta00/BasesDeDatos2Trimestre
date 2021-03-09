@@ -12,6 +12,20 @@ INNER JOIN Categories AS C ON P.CategoryID=C.CategoryID
 WHERE YEAR(O.ShippedDate)='1997'
 GROUP BY C.CategoryID,YEAR(O.ShippedDate),C.CategoryName
 
+--10. Producto superventas de cada año, indicando año, nombre del producto,
+--categoría y cifra total de ventas.
+SELECT MVTT.MVT,VT.ProductName,VT.CategoryID FROM
+(SELECT  VT.Año,MAX(VT.[Ventas Totales]) AS [MVT] FROM
+(SELECT YEAR(O.ShippedDate) AS Año,P.ProductName,P.CategoryID,SUM(OD.Quantity) AS [Ventas Totales] FROM [Order Details] AS OD
+INNER JOIN Products AS P ON OD.ProductID=P.ProductID 
+INNER JOIN Orders AS O ON OD.OrderID=O.OrderID 
+GROUP BY OD.ProductID,P.ProductName,P.CategoryID,YEAR(O.ShippedDate)) AS [VT] GROUP BY VT.Año) AS [MVTT] 
+INNER JOIN
+(SELECT YEAR(O.ShippedDate) AS Año,P.ProductName,P.CategoryID,SUM(OD.Quantity) AS [Ventas Totales] FROM [Order Details] AS OD
+INNER JOIN Products AS P ON OD.ProductID=P.ProductID 
+INNER JOIN Orders AS O ON OD.OrderID=O.OrderID 
+GROUP BY OD.ProductID,P.ProductName,P.CategoryID,YEAR(O.ShippedDate)) AS [VT] ON MVTT.MVT=VT.[Ventas Totales] AND VT.Año=MVTT.Año
+select*from Orders
 --11.Cifra de ventas de cada producto en el año 97 y su aumento o disminución
 --respecto al año anterior en US $ y en %.
 
@@ -66,7 +80,6 @@ INNER JOIN Customers AS C ON O.CustomerID=C.CustomerID INNER JOIN MV ON YEAR(O.S
 GROUP BY C.CustomerID,C.ContactName,YEAR(O.ShippedDate),MV.[Ventas Totales 97]
 HAVING SUM(OD.Quantity*OD.UnitPrice*(1-OD.Discount))>MV.[Ventas Totales 97]
 
-
 --REALIZADO CON SUBCONSULTAS
 SELECT VTT.ContactName,VTT.CustomerID,MVT.Año FROM
 (SELECT VT.Año,AVG(VT.[Ventas Totales]) AS [Media Ventas Totales 97] FROM
@@ -82,3 +95,14 @@ INNER JOIN Customers AS C ON O.CustomerID=C.CustomerID INNER JOIN MV ON YEAR(O.S
 GROUP BY C.CustomerID,C.ContactName,YEAR(O.ShippedDate)) AS [VTT] ON  MVT.Año=VTT.Año
 WHERE VTT.[Ventas Totales]>MVT.[Media Ventas Totales 97]
 
+--16
+CREATE OR ALTER VIEW [Gastos] AS (
+    SELECT EmployeeID, YEAR(O.OrderDate) AS Año, SUM((OD.UnitPrice * OD.Quantity) * (1 - OD.Discount)) AS Quantity FROM Orders AS O
+    INNER JOIN [Order Details] AS OD ON O.OrderID = OD.OrderID 
+    GROUP BY EmployeeID, Year(O.OrderDate)
+)
+GO
+
+SELECT Primero.EmployeeID, SEGUNDO.Año, ROUND((Primero.Quantity - Segundo.Quantity)/Primero.Quantity100, 1) AS [Diferencia(%)] FROM Gastos AS Primero
+INNER JOIN Gastos AS Segundo ON Primero.Año = (Segundo.Año - 1)
+WHERE (Primero.Quantity - Segundo.Quantity)/Primero.Quantity100 > 10
